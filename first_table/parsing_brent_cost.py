@@ -1,6 +1,15 @@
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
+import openpyxl
+import numpy as np
+import datetime
+wb = openpyxl.load_workbook('Приложение 1.xlsx')
+sheet = wb['Анализ_БК+ББ']
+d = sheet['N4'].value.date()
+d = str(d).split('-')[::-1]
+d = '.'.join(d)
+message = 'Нет данных'
 cost_table = pd.DataFrame(columns=["Date", "Brent_oil_cost"])
 url = 'https://ru.investing.com/commodities/brent-oil-historical-data'
 headers = {'user-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0',
@@ -15,4 +24,10 @@ for el in rows:
       cost = str(cost).replace(',', '.')
       cost_table = pd.concat([cost_table, pd.Series({"Date": date, "Brent_oil_cost": cost}).to_frame().T], ignore_index=True)
 cost_table['Brent_oil_cost'] = cost_table['Brent_oil_cost'].astype(float)
-print(cost_table)
+value = cost_table[cost_table.Date == d].Brent_oil_cost
+if len(value) == 0:
+      value = pd.Series([message])
+value = np.array(value)[0]
+sheet['B4'] = value
+wb.save("Приложение 1.xlsx")
+wb.close()
