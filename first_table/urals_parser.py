@@ -27,6 +27,7 @@ print(sheet)
 for i in range(len(prices)):
     # sheet[] = quotes[i]
     sheet[f"{chr(68+i)}{14}"].value = prices[i]
+    sheet[f"{chr(68+i)}{171}"].value = prices[i]
 wb.save("Приложение 1.xlsx")
 wb.close()
 
