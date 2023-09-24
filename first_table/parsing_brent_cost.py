@@ -19,7 +19,7 @@ def fill_xlsx(cell, letter):
     d = sheet[cell].value.date()
     d = str(d).split('-')[::-1]
     d = '.'.join(d)
-    message = 'Нет данных'
+    message = 0
     cost_table = pd.DataFrame(columns=["Date", "Brent_oil_cost"])
     url = 'https://ru.investing.com/commodities/brent-oil-historical-data'
     headers = {'user-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0',
@@ -52,3 +52,18 @@ def fill_xlsx(cell, letter):
 cells = generate_strings('N', 4, 41)
 for cell in cells:
     fill_xlsx(cell, 'B')
+wb = openpyxl.load_workbook('Приложение 1.xlsx')
+sheet = wb['Анализ_БК+ББ']
+first_not_null = 4
+for i in range(first_not_null, 29):
+    if sheet[f'B{i}'].value != 0:
+        first_not_null = i
+        break
+if sheet['B4'].value == 0:
+    sheet['B4'].value = sheet[f'B{first_not_null}'].value
+for i in range(4, 29):
+    if sheet[f'B{i + 1}'].value == 0:
+        sheet[f'B{i + 1}'].value = sheet[f'B{i}'].value
+wb.save("Приложение 1.xlsx")
+wb.close()
+
