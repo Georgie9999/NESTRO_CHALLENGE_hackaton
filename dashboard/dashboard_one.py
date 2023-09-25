@@ -2,10 +2,10 @@ import pandas as pd
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import numpy as np
-import pathlib
-import os
-import base64
+from datetime import timedelta, datetime
+from dateutil.relativedelta import *
+
+
 
 data = pd.read_excel('../first_table/Приложение 1.xlsx')
 data.columns = data.iloc[0]
@@ -25,6 +25,8 @@ customers = pd.read_csv("../first_table/customers.csv").drop('Unnamed: 0', axis 
 customers_values = customers['Покупатель']
 profit_course = customers['Прибыль за счёт изменения курса (руб)']
 cash_course = customers['Поступление (руб)']
+
+urals = pd.read_csv("../first_table/urals.csv")['Urals']
 
 external_stylesheets = [
     {
@@ -80,6 +82,34 @@ app.layout = html.Div(
                 ),
                 html.Div(
                     children=dcc.Graph(
+                        id="price-chart",
+                        config={"displayModeBar": False},
+                        figure={
+                            "data": [
+                                {
+                                    "x": [datetime(2022, 2, 1)+ relativedelta(months=+i) for i in range(11)],
+                                    "y": urals,
+                                    "type": "lines",
+                                },
+                            ],
+                            "layout": {
+                                "title": {
+                                    "text": "Цена нефти Юралс по месяцам(2022), $/барр.",
+                                    "x": 0.45,
+                                    "xanchor": "left",
+                                },
+                                "xaxis": {"fixedrange": True},
+                                "yaxis": {
+                                    "fixedrange": True,
+                                },
+                                "colorway": ["#F12D39"],
+                            },
+                        },
+                    ),
+                    className="card",
+                ),
+                html.Div(
+                    children=dcc.Graph(
                         id="volume-chart",
                         config={"displayModeBar": False},
                         figure={
@@ -98,7 +128,7 @@ app.layout = html.Div(
                                 },
                                 "xaxis": {"fixedrange": True},
                                 "yaxis": {"fixedrange": True},
-                                "colorway": ["#E12D39"],
+                                "colorway": ["#2d7be1"],
                             },
                         },
                     ),
@@ -162,7 +192,7 @@ app.layout = html.Div(
                             "layout": {
                                 "title": {
                                     "text": "Гистограмма поступления денежных средств с учетом курса, руб.",
-                                    "x": 0.45,
+                                    "x": 0.40,
                                     "xanchor": "left",
                                 },
                             },

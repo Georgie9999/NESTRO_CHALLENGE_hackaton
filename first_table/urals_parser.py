@@ -20,6 +20,8 @@ for month in months:
     soup = bs(webpage, "html.parser")
     prices.append(float([x for x in soup.findAll('p') if "США за баррель" in x.text][0].text.split()[0].replace(",", ".")))
 
+urals = pd.DataFrame(prices, columns=["Urals"])
+urals.to_csv('urals.csv')
 wb = openpyxl.load_workbook('Приложение 1.xlsx')
 sheet = wb['Компания 1_факт_НДПИ (Platts)']
 
