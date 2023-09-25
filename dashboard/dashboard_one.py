@@ -5,8 +5,7 @@ import dash_html_components as html
 import numpy as np
 import pathlib
 import os
-import sys
-
+import base64
 
 data = pd.read_excel('../first_table/Приложение 1.xlsx')
 data.columns = data.iloc[0]
@@ -19,6 +18,13 @@ brent_price = data['Цена Brent,\n$/барр.'][data['Цена Brent,\n$/ба
 
 spread_price = data['Spread (Корректировка),\n$/барр.'][data['Spread (Корректировка),\n$/барр.'].notna()]
 freight_price = data['Freight (Корректировка),\n$/барр.'][data['Freight (Корректировка),\n$/барр.'].notna()]
+
+
+customers = pd.read_csv("../first_table/customers.csv").drop('Unnamed: 0', axis = 1)
+# print(customers)
+customers_values = customers['Покупатель']
+profit_course = customers['Прибыль за счёт изменения курса (руб)']
+cash_course = customers['Поступление (руб)']
 
 external_stylesheets = [
     {
@@ -37,10 +43,8 @@ app.layout = html.Div(
                 html.H1(
                     children="NESTRO_CHALLENGE_hackaton", className="header-title"
                 ),
-                html.P(
-                    children="Курс доллара, цена на нефть марки Brent и не только",
-                    className="header-description",
-                ),
+
+
             ],
             className="header",
         ),
@@ -61,7 +65,7 @@ app.layout = html.Div(
                             "layout": {
                                 "title": {
                                     "text": "Курс доллара, руб.",
-                                    "x": 0.05,
+                                    "x": 0.45,
                                     "xanchor": "left",
                                 },
                                 "xaxis": {"fixedrange": True},
@@ -89,7 +93,7 @@ app.layout = html.Div(
                             "layout": {
                                 "title": {
                                     "text": "Цена на нефть марки Brent, $",
-                                    "x": 0.05,
+                                    "x": 0.45,
                                     "xanchor": "left",
                                 },
                                 "xaxis": {"fixedrange": True},
@@ -128,22 +132,50 @@ app.layout = html.Div(
                             "layout": {
                                 "title": {
                                     "text": "Гистограмма изменения котировок, $/ барр.",
-                                    "x": 0.05,
+                                    "x": 0.45,
                                     "xanchor": "left",
                                 },
                             },
                         },
                     ),
                     className="card",
-                )
-
+                ),
+                html.Div(
+                    children=dcc.Graph(
+                        id="volume-chart",
+                        config={"displayModeBar": False},
+                        figure={
+                            "data": [
+                                {
+                                    "x": customers_values,
+                                    "y": profit_course,
+                                    "type": "bar",
+                                    "name": "Прибыль за счёт изменения курса (руб)"
+                                },
+                                {
+                                    "x": customers_values,
+                                    "y": cash_course,
+                                    "type": "bar",
+                                    "name": "Поступление (руб)",
+                                },
+                            ],
+                            "layout": {
+                                "title": {
+                                    "text": "Гистограмма поступления денежных средств с учетом курса, руб.",
+                                    "x": 0.45,
+                                    "xanchor": "left",
+                                },
+                            },
+                        },
+                    ),
+                    className="card",
+                ),
 
             ],
             className="wrapper",
         ),
     ]
 )
-
 
 if __name__ == "__main__":
     app.run_server(debug=True)
