@@ -17,6 +17,9 @@ dollar_data = data.iloc[:, 13][data.iloc[:, 13].notna()]
 
 brent_price = data['Цена Brent,\n$/барр.'][data['Цена Brent,\n$/барр.'].notna()]
 
+spread_price = data['Spread (Корректировка),\n$/барр.'][data['Spread (Корректировка),\n$/барр.'].notna()]
+freight_price = data['Freight (Корректировка),\n$/барр.'][data['Freight (Корректировка),\n$/барр.'].notna()]
+
 external_stylesheets = [
     {
         "href": "https://fonts.googleapis.com/css2?"
@@ -97,6 +100,44 @@ app.layout = html.Div(
                     ),
                     className="card",
                 ),
+                html.Div(
+                    children=dcc.Graph(
+                        id="volume-chart",
+                        config={"displayModeBar": False},
+                        figure={
+                            "data": [
+                                {
+                                    "x": dollar_data,
+                                    "y": brent_price,
+                                    "type": "bar",
+                                    "name": "Brent price, $/барр."
+                                },
+                                {
+                                    "x": dollar_data,
+                                    "y": spread_price,
+                                    "type": "bar",
+                                    "name": "Spread, $/барр.",
+                                },
+                                {
+                                    "x": dollar_data,
+                                    "y": freight_price,
+                                    "type": "bar",
+                                    "name": "Freiqht, $/барр.",
+                                },
+                            ],
+                            "layout": {
+                                "title": {
+                                    "text": "Гистограмма изменения котировок, $/ барр.",
+                                    "x": 0.05,
+                                    "xanchor": "left",
+                                },
+                            },
+                        },
+                    ),
+                    className="card",
+                )
+
+
             ],
             className="wrapper",
         ),
