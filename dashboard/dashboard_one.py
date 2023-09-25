@@ -25,7 +25,7 @@ external_stylesheets = [
     },
 ]
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-app.title = "Avocado Analytics: Understand Your Avocados!"
+app.title = "Dashboard for 3 case"
 
 app.layout = html.Div(
     children=[
