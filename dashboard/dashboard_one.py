@@ -52,6 +52,12 @@ mest3 = pd.read_csv("../first_table/Mest_3.csv")
 NDPI = pd.read_csv("NDPI.csv")
 NDPI = NDPI.drop("Unnamed: 0", axis=1)
 
+rubles = [1402041212, 1827113572, 948203868, 2510493674, 2031401084, 2168360403, 2361863247, 1102101923,
+          2679967069, 1375881131, 1257702216, 1516441230, 977103216, 1586801050, 1028239739, 1094665885,
+          2635361407, 2328002451, 1244653628, 1586277057, 1442172735, 2578805612, 2565191432, 2323800142,
+          2042848022]
+post = pd.DataFrame({"Дата":dollar_data, "Поступление, руб.": rubles})
+
 app = dash.Dash(__name__)
 app.title = "Dashboard for 3 case"
 
@@ -118,7 +124,11 @@ app.layout = html.Div([
         dmc.Col([html.H2(children='Месторождение 3, Объем добычи'),
                  dcc.Graph(figure=px.pie(mest3, values='Объём добычи', names='Месяц', hole=.3))
                  ], span=4)
-    ])
+    ]),
+
+    html.Div(children=[html.H2(children='Поступление, руб.'),
+                       dcc.Graph(figure=px.line(post, x='Дата', y='Поступление, руб.', markers=True,
+                                                color_discrete_sequence=["orange"]))])
 
 ])
 
