@@ -45,13 +45,19 @@ oil_price_brent = pd.DataFrame(
     {"Дата_brent": dollar_data,
      "Цена Brent, $/барр.": brent_price})
 
+mest1 = pd.read_csv("../first_table/Mest_1.csv")
+mest2 = pd.read_csv("../first_table/Mest_2.csv")
+mest3 = pd.read_csv("../first_table/Mest_3.csv")
+
+NDPI = pd.read_csv("NDPI.csv")
+NDPI = NDPI.drop("Unnamed: 0", axis=1)
+
 app = dash.Dash(__name__)
 app.title = "Dashboard for 3 case"
 
 app.layout = html.Div([
     html.Div(children=[html.H1(children='NESTRO_CHALLENGE_hackaton', style={'textAlign': 'center'}),
                        html.H2(children='АО «Зарубежнефть»', style={'textAlign': 'center'})]),
-
     html.Div(children=[html.H2(children='Курс доллара, руб.'),
                        dash_table.DataTable(data=dollar.to_dict('records'), page_size=6),
                        dcc.Graph(figure=px.line(dollar, x='Дата', y='Курс доллара, руб.', markers=True,
@@ -77,7 +83,7 @@ app.layout = html.Div([
         dmc.Col([
             dcc.Graph(figure=px.histogram(customers, x='Покупатель',
                                           y=['Прибыль за счёт изменения курса (руб)',
-                                             "Поступление (руб)"],barmode='group'))
+                                             "Поступление (руб)"], barmode='group'))
         ], span=6),
     ]),
 
@@ -87,9 +93,34 @@ app.layout = html.Div([
                        dcc.Graph(figure=px.histogram(price, x='Дата',
                                                      y=['Цена Brent, $/барр.',
                                                         "Spread (Корректировка), $/барр.",
-                                                        "Freight (Корректировка), $/барр."], nbins=20,barmode='group'))])
+                                                        "Freight (Корректировка), $/барр."], nbins=25,
+                                                     barmode='group'))]),
+    dmc.Grid([
+        dmc.Col([html.H2(children='Месторождение 1, НДПИ'),
+                 dcc.Graph(figure=px.pie(mest1, values='НДПИ', names='Месяц', hole=.3))
+                 ], span=4),
+        dmc.Col([html.H2(children='Месторождение 2, НДПИ'),
+                 dcc.Graph(figure=px.pie(mest2, values='НДПИ', names='Месяц', hole=.3))
+                 ], span=4),
+        dmc.Col([html.H2(children='Месторождение 3, НДПИ'),
+                 dcc.Graph(figure=px.pie(mest3, values='НДПИ', names='Месяц', hole=.3))
+                 ], span=4)
+    ]),
+    html.Div(children=[html.H2(children='Суммарное НДПИ'),
+                       dcc.Graph(figure=px.pie(NDPI, values='НДПИ', names='Месяц', hole=.3))]),
+    dmc.Grid([
+        dmc.Col([html.H2(children='Месторождение 1, Объем добычи'),
+                 dcc.Graph(figure=px.pie(mest1, values='Объём добычи', names='Месяц', hole=.3))
+                 ], span=4),
+        dmc.Col([html.H2(children='Месторождение 2, Объем добычи'),
+                 dcc.Graph(figure=px.pie(mest2, values='Объём добычи', names='Месяц', hole=.3))
+                 ], span=4),
+        dmc.Col([html.H2(children='Месторождение 3, Объем добычи'),
+                 dcc.Graph(figure=px.pie(mest3, values='Объём добычи', names='Месяц', hole=.3))
+                 ], span=4)
+    ])
+
 ])
 
 if __name__ == '__main__':
     app.run(debug=True)
-
